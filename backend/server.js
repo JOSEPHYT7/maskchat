@@ -1,6 +1,7 @@
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
+const cors = require('cors');
 const UserMatcher = require('./matchingAlgorithm');
 
 // Store for private rooms
@@ -14,8 +15,36 @@ function generateRoomId() {
 const app = express();
 const server = http.createServer(app);
 
-// Configure Socket.IO
-const io = socketIo(server);
+// Configure CORS for Express
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://mask-chat-three.vercel.app',
+  'https://mask-chat-three.vercel.app/'
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.log('Blocked by CORS:', origin);
+      callback(null, true); // Allow all origins for now (can be restricted later)
+    }
+  },
+  credentials: true
+}));
+
+// Configure Socket.IO with CORS
+const io = socketIo(server, {
+  cors: {
+    origin: allowedOrigins,
+    methods: ['GET', 'POST'],
+    credentials: true
+  }
+});
 
 // Middleware
 app.use(express.json());
