@@ -22,8 +22,14 @@ function App() {
   const [isHost, setIsHost] = useState(false);
 
   useEffect(() => {
-    // Connect to local backend
-    const backendUrl = 'http://localhost:5001';
+    // Auto-detect backend URL based on environment
+    // For production: Use your deployed Render backend URL
+    // For development: Use localhost
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || 
+                       (window.location.hostname === 'localhost' 
+                         ? 'http://localhost:5001' 
+                         : 'https://maskchat-backend.onrender.com');
+    
     console.log('🔌 Attempting to connect to:', backendUrl);
     
     const newSocket = io(backendUrl, {
@@ -35,12 +41,12 @@ function App() {
     
     // Test socket connection
     newSocket.on('connect', () => {
-      console.log('✅ Connected to local backend:', newSocket.id);
+      console.log('✅ Connected to backend:', newSocket.id);
       console.log('✅ Socket transport:', newSocket.io.engine.transport.name);
     });
 
     newSocket.on('disconnect', (reason) => {
-      console.log('❌ Disconnected from local backend:', reason);
+      console.log('❌ Disconnected from backend:', reason);
     });
 
     newSocket.on('connect_error', (error) => {
