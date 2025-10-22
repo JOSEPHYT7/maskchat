@@ -28,7 +28,7 @@ function App() {
     const backendUrl = process.env.REACT_APP_BACKEND_URL || 
                        (window.location.hostname === 'localhost' 
                          ? 'http://localhost:5001' 
-                         : 'https://maskchat-backend.onrender.com');
+                         : 'https://maskchat-pbo3.onrender.com');
     
     console.log('🔌 Attempting to connect to:', backendUrl);
     
