@@ -417,35 +417,54 @@ const VideoChat = ({ socket, roomId, onBackToHome }) => {
     };
   }, [socket, localStream]);
 
+  // Display local video whenever localStream or video ref changes
   useEffect(() => {
-    if (localStream && localVideoRef.current) {
-      console.log('📹 Setting local video stream');
-      console.log('📹 Stream ID:', localStream.id);
-      console.log('📹 Active tracks:', localStream.getTracks().map(t => `${t.kind}: ${t.readyState} (enabled: ${t.enabled})`));
-      
-      // Ensure video track is enabled
-      const videoTrack = localStream.getVideoTracks()[0];
-      if (videoTrack) {
-        console.log('📹 Video track enabled:', videoTrack.enabled);
-        console.log('📹 Video track settings:', videoTrack.getSettings());
-      }
-      
-      localVideoRef.current.srcObject = localStream;
-      
-      // Force play in case autoPlay doesn't work
-      localVideoRef.current.play()
-        .then(() => {
-          console.log('✅ Local video playing successfully');
-          console.log('📺 Video element dimensions:', localVideoRef.current.videoWidth, 'x', localVideoRef.current.videoHeight);
-        })
-        .catch(err => {
-          console.error('❌ Error playing local video:', err);
+    const displayLocalVideo = () => {
+      if (localStream && localVideoRef.current) {
+        console.log('📹 Setting local video stream');
+        console.log('📹 Stream ID:', localStream.id);
+        console.log('📹 Active tracks:', localStream.getTracks().map(t => `${t.kind}: ${t.readyState} (enabled: ${t.enabled})`));
+        
+        // Ensure video track is enabled
+        const videoTrack = localStream.getVideoTracks()[0];
+        if (videoTrack) {
+          console.log('📹 Video track enabled:', videoTrack.enabled);
+          console.log('📹 Video track settings:', videoTrack.getSettings());
+          
+          // Force enable if disabled
+          if (!videoTrack.enabled) {
+            videoTrack.enabled = true;
+            console.log('✅ Enabled video track');
+          }
+        }
+        
+        localVideoRef.current.srcObject = localStream;
+        
+        // Add loadedmetadata event listener
+        localVideoRef.current.onloadedmetadata = () => {
+          console.log('📺 Video metadata loaded');
+          localVideoRef.current.play()
+            .then(() => {
+              console.log('✅ Local video playing successfully');
+              console.log('📺 Video element dimensions:', localVideoRef.current.videoWidth, 'x', localVideoRef.current.videoHeight);
+            })
+            .catch(err => {
+              console.error('❌ Error playing local video:', err);
+            });
+        };
+        
+        // Also try playing immediately
+        localVideoRef.current.play().catch(err => {
+          console.log('⚠️ Immediate play failed (waiting for metadata):', err.message);
         });
-    } else if (!localStream) {
-      console.log('⚠️ No local stream available to display');
-    } else if (!localVideoRef.current) {
-      console.log('⚠️ Video ref not available yet');
-    }
+      } else if (!localStream) {
+        console.log('⚠️ No local stream available to display');
+      } else if (!localVideoRef.current) {
+        console.log('⚠️ Video ref not available yet');
+      }
+    };
+    
+    displayLocalVideo();
   }, [localStream]);
 
   useEffect(() => {
