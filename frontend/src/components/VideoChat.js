@@ -389,13 +389,23 @@ const VideoChat = ({ socket, roomId, onBackToHome }) => {
 
     // Listen for partner disconnected
     socket.on('partnerDisconnected', () => {
-      setIsConnected(false);
-      setIsWaiting(false);
-      setRemoteStream(null);
+      console.log('👋 Partner disconnected - rejoining queue');
+      
+      // Clean up peer connection
       if (peerConnectionRef.current) {
         peerConnectionRef.current.close();
         peerConnectionRef.current = null;
       }
+      
+      // Reset state
+      setIsConnected(false);
+      setRemoteStream(null);
+      setIsInitiator(false);
+      setConnectionStatus('Partner disconnected. Finding new partner...');
+      
+      // Automatically rejoin the queue
+      setIsWaiting(true);
+      socket.emit('joinVideoQueue');
     });
 
     return () => {

@@ -477,27 +477,32 @@ class UserMatcher {
     }
     
     if (currentRoom) {
-      // Notify other user
+      // Notify other user that partner disconnected
       const otherUser = currentRoom.users.find(id => id !== socketId);
-      if (otherUser) {
-        socket.to(otherUser).emit('partnerDisconnected');
+      if (otherUser && this.io) {
+        console.log(`🔔 Notifying ${otherUser} that partner ${socketId} requested next partner`);
+        this.io.to(otherUser).emit('partnerDisconnected');
       }
       
       // Clean up room
       this.activeRooms.delete(currentRoomId);
+      console.log(`🗑️ Deleted room ${currentRoomId}`);
       
       // Update behavior
       this.updateUserBehavior(socketId, 'skipped');
-      this.updateUserBehavior(otherUser, 'partner_skipped');
+      if (otherUser) {
+        this.updateUserBehavior(otherUser, 'partner_skipped');
+      }
       
       // Re-add to queue for instant re-matching
+      console.log(`🔄 User ${socketId} rejoining ${currentRoom.type} queue...`);
       this.addUser(socket, currentRoom.type, {
         socketId: socketId,
         joinTime: Date.now(),
         isRejoining: true
       });
-      
-      console.log(`🔄 User ${socketId} rejoined ${currentRoom.type} queue for instant re-matching`);
+    } else {
+      console.log(`⚠️ No active room found for user ${socketId}`);
     }
   }
 
