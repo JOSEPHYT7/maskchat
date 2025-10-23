@@ -22,8 +22,13 @@ function App() {
   const [isHost, setIsHost] = useState(false);
 
   useEffect(() => {
-    // FORCE localhost for testing - change this back for production!
-    const backendUrl = 'http://localhost:5001';
+    // Auto-detect backend URL based on environment
+    // For production: Use your deployed Render backend URL
+    // For development: Use localhost
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || 
+                       (window.location.hostname === 'localhost' 
+                         ? 'http://localhost:5001' 
+                         : 'https://maskchat-pbo3.onrender.com');
     
     console.log('🔌 Attempting to connect to:', backendUrl);
     
