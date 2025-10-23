@@ -421,7 +421,14 @@ const VideoChat = ({ socket, roomId, onBackToHome }) => {
     if (localStream && localVideoRef.current) {
       console.log('📹 Setting local video stream');
       console.log('📹 Stream ID:', localStream.id);
-      console.log('📹 Active tracks:', localStream.getTracks().map(t => `${t.kind}: ${t.readyState}`));
+      console.log('📹 Active tracks:', localStream.getTracks().map(t => `${t.kind}: ${t.readyState} (enabled: ${t.enabled})`));
+      
+      // Ensure video track is enabled
+      const videoTrack = localStream.getVideoTracks()[0];
+      if (videoTrack) {
+        console.log('📹 Video track enabled:', videoTrack.enabled);
+        console.log('📹 Video track settings:', videoTrack.getSettings());
+      }
       
       localVideoRef.current.srcObject = localStream;
       
@@ -429,6 +436,7 @@ const VideoChat = ({ socket, roomId, onBackToHome }) => {
       localVideoRef.current.play()
         .then(() => {
           console.log('✅ Local video playing successfully');
+          console.log('📺 Video element dimensions:', localVideoRef.current.videoWidth, 'x', localVideoRef.current.videoHeight);
         })
         .catch(err => {
           console.error('❌ Error playing local video:', err);
@@ -653,7 +661,8 @@ const VideoChat = ({ socket, roomId, onBackToHome }) => {
             muted
             style={{ 
               background: '#000',
-              borderRadius: '15px'
+              borderRadius: '15px',
+              transform: 'scaleX(-1)' // Mirror the local video
             }}
           />
           <div className="video-label">You</div>
