@@ -11,6 +11,7 @@ const VideoChat = ({ socket, roomId, onBackToHome }) => {
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOff, setIsVideoOff] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState('Initializing...');
+  const [videoDisplayTrigger, setVideoDisplayTrigger] = useState(0); // Counter to trigger video re-display
   
   const [isInitiator, setIsInitiator] = useState(false);
   
@@ -237,6 +238,19 @@ const VideoChat = ({ socket, roomId, onBackToHome }) => {
     console.log('🔄 User requested next partner');
     socket.emit('nextPartner');
     
+    // Clear remote video element
+    if (remoteVideoRef.current) {
+      remoteVideoRef.current.srcObject = null;
+      console.log('🧹 Cleared remote video element');
+    }
+    
+    // Reset local video setup flag so it can be re-displayed
+    localVideoSetupRef.current = false;
+    console.log('🔄 Reset local video setup flag');
+    
+    // Trigger video re-display
+    setVideoDisplayTrigger(prev => prev + 1);
+    
     // Reset all connection state
     setIsWaiting(true);
     setIsConnected(false);
@@ -421,7 +435,7 @@ const VideoChat = ({ socket, roomId, onBackToHome }) => {
   // Display local video whenever localStream or video ref changes
   useEffect(() => {
     const displayLocalVideo = () => {
-      if (localStream && localVideoRef.current) {
+    if (localStream && localVideoRef.current) {
         // Reset setup flag to allow re-setup
         localVideoSetupRef.current = false;
         
@@ -483,7 +497,7 @@ const VideoChat = ({ socket, roomId, onBackToHome }) => {
         localVideoRef.current.onloadedmetadata = null;
       }
     };
-  }, [localStream]);
+  }, [localStream, videoDisplayTrigger]); // Re-run when localStream changes or when manually triggered
 
   // Separate effect to ensure local video displays even if ref loads late
   useEffect(() => {
