@@ -409,9 +409,16 @@ class UserMatcher {
     this.updateUserBehavior(socket1.id, 'chat_started');
     this.updateUserBehavior(user2.socketId, 'chat_started');
     
-    // Emit pairing events
-    socket1.emit('partnerFound', { roomId, type });
-    socket1.to(user2.socketId).emit('partnerFound', { roomId, type });
+    // Emit pairing events to both users
+    // User 1 is the initiator for video calls
+    const data1 = { roomId, type, isInitiator: true };
+    const data2 = { roomId, type, isInitiator: false };
+    
+    console.log(`📤 Sending to ${socket1.id}:`, JSON.stringify(data1));
+    socket1.emit('partnerFound', data1);
+    
+    console.log(`📤 Sending to ${user2.socketId}:`, JSON.stringify(data2));
+    this.io.to(user2.socketId).emit('partnerFound', data2);
     
     // Update metrics
     this.metrics.totalPairings++;
@@ -420,7 +427,7 @@ class UserMatcher {
     const waitTime = Date.now() - user1.joinTime;
     this.metrics.averageWaitTime = (this.metrics.averageWaitTime + waitTime) / 2;
     
-    console.log(`✅ INSTANT PAIRING: ${socket1.id} + ${user2.socketId} in ${type} room ${roomId}`);
+    console.log(`✅ INSTANT PAIRING: ${socket1.id} (initiator) + ${user2.socketId} (receiver) in ${type} room ${roomId}`);
     console.log(`📊 Active rooms: ${this.activeRooms.size}, Text queue: ${this.textQueue.size}, Video queue: ${this.videoQueue.size}`);
   }
 

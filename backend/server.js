@@ -258,15 +258,31 @@ io.on('connection', (socket) => {
   
   // Handle WebRTC signaling
   socket.on('webrtc-signal', (data) => {
+    console.log(`📡 Received WebRTC signal from ${socket.id}:`, data.type);
+    console.log(`📊 Active rooms:`, userMatcher.activeRooms.size);
+    
     // Find the room for this user
+    let found = false;
     for (const [roomId, room] of userMatcher.activeRooms.entries()) {
       if (room.users.includes(socket.id)) {
         const otherUser = room.users.find(id => id !== socket.id);
         if (otherUser) {
-          socket.to(otherUser).emit('webrtc-signal', data);
+          console.log(`✅ Found room ${roomId} - Forwarding ${data.type} from ${socket.id} to ${otherUser}`);
+          io.to(otherUser).emit('webrtc-signal', data);
+          found = true;
+        } else {
+          console.log(`⚠️ Room ${roomId} found but no other user`);
         }
         break;
       }
+    }
+    
+    if (!found) {
+      console.log(`❌ No room found for user ${socket.id}`);
+      console.log(`📋 All rooms:`, Array.from(userMatcher.activeRooms.entries()).map(([id, room]) => ({
+        roomId: id,
+        users: room.users
+      })));
     }
   });
   

@@ -123,7 +123,7 @@ const TextChat = ({ socket, roomId, onBackToHome }) => {
     onBackToHome();
   };
 
-  if (isWaiting) {
+  if (isWaiting && !isConnected) {
     return (
       <div className="text-center">
         <div className="card">
@@ -140,7 +140,7 @@ const TextChat = ({ socket, roomId, onBackToHome }) => {
     );
   }
 
-  if (showNoUsersAlert) {
+  if (showNoUsersAlert && !isConnected) {
     return (
       <div className="text-center">
         <div className="card">
@@ -160,7 +160,11 @@ const TextChat = ({ socket, roomId, onBackToHome }) => {
             </p>
           </div>
           <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button className="btn btn-secondary" onClick={() => window.location.reload()}>
+            <button className="btn btn-secondary" onClick={() => {
+              setShowNoUsersAlert(false);
+              setIsWaiting(true);
+              if (socket) socket.emit('joinTextQueue');
+            }}>
               Try Again
             </button>
             <button className="btn btn-danger" onClick={handleStopChat}>
@@ -174,15 +178,17 @@ const TextChat = ({ socket, roomId, onBackToHome }) => {
 
   return (
     <div className="card">
-      <div style={{ 
+      <div className="chat-header" style={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center',
         marginBottom: '20px',
         paddingBottom: '15px',
-        borderBottom: '2px solid rgba(255, 255, 255, 0.2)'
+        borderBottom: '2px solid rgba(255, 255, 255, 0.2)',
+        flexWrap: 'wrap',
+        gap: '10px'
       }}>
-        <h2>Text Chat</h2>
+        <h2 style={{ margin: 0 }}>Text Chat</h2>
         <div className="status connected">
           Connected
         </div>
@@ -191,14 +197,14 @@ const TextChat = ({ socket, roomId, onBackToHome }) => {
       <div className="chat-container">
         <div className="chat-messages">
           {messages.length === 0 ? (
-            <div style={{ 
+            <div className="empty-chat" style={{ 
               textAlign: 'center', 
               color: '#666',
               padding: '40px 20px'
             }}>
-              <div style={{ fontSize: '3rem', marginBottom: '20px' }}>👋</div>
-              <h3>Say hello to your stranger!</h3>
-              <p>Start typing to begin your conversation.</p>
+              <div style={{ fontSize: '2.5rem', marginBottom: '15px' }}>👋</div>
+              <h3 style={{ fontSize: '1.2rem', marginBottom: '10px' }}>Say hello to your stranger!</h3>
+              <p style={{ fontSize: '0.95rem' }}>Start typing to begin your conversation.</p>
             </div>
           ) : (
             messages.map((message, index) => (
@@ -234,34 +240,36 @@ const TextChat = ({ socket, roomId, onBackToHome }) => {
           <button 
             type="submit" 
             disabled={!isConnected || !newMessage.trim()}
+            className="send-button"
             style={{ 
               opacity: (isConnected && newMessage.trim()) ? 1 : 0.6,
               cursor: (isConnected && newMessage.trim()) ? 'pointer' : 'not-allowed',
               display: 'flex',
               alignItems: 'center',
+              justifyContent: 'center',
               gap: '6px'
             }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
               <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
             </svg>
-            Send
+            <span className="send-text">Send</span>
           </button>
         </form>
       </div>
 
-      <div className="controls">
-        <button className="btn btn-secondary" onClick={handleNextPartner} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+      <div className="controls" style={{ marginTop: '15px' }}>
+        <button className="btn btn-secondary" onClick={handleNextPartner} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
           </svg>
-          Next Partner
+          <span>Next Partner</span>
         </button>
-        <button className="btn btn-danger" onClick={handleStopChat} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <button className="btn btn-danger" onClick={handleStopChat} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
           </svg>
-          Stop Chat
+          <span>Stop Chat</span>
         </button>
       </div>
     </div>

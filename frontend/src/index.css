@@ -247,15 +247,17 @@ code {
   flex-wrap: wrap;
 }
 
+/* Tablet and Mobile Responsive Styles */
 @media (max-width: 768px) {
   .container {
     padding: 10px;
   }
   
   .btn {
-    min-width: 150px;
+    min-width: 120px;
     padding: 12px 20px;
     font-size: 14px;
+    margin: 5px;
   }
   
   .video-container {
@@ -266,12 +268,292 @@ code {
     height: 200px;
   }
   
+  /* Text Chat Mobile Optimizations */
+  .chat-container {
+    height: calc(100vh - 280px);
+    max-height: none;
+  }
+  
+  .chat-messages {
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+  
+  .message {
+    max-width: 85%;
+    padding: 12px 15px;
+    font-size: 15px;
+    margin-bottom: 12px;
+  }
+  
+  .chat-input {
+    gap: 8px;
+  }
+  
+  .chat-input input {
+    padding: 12px 15px;
+    font-size: 15px;
+  }
+  
+  .chat-input button {
+    padding: 12px 20px;
+    min-width: auto;
+    white-space: nowrap;
+  }
+  
+  .controls {
+    gap: 8px;
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .controls .btn {
+    width: 100%;
+    min-width: auto;
+    margin: 5px 0;
+  }
+  
+  .card {
+    padding: 20px;
+    border-radius: 15px;
+  }
+  
+  /* Header responsiveness */
+  .card > div:first-child {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 10px;
+  }
+  
+  .card h2 {
+    font-size: 1.5rem;
+  }
+  
   /* Support button mobile styles */
   .support-button {
     padding: 10px 16px !important;
     font-size: 0.85rem !important;
     min-width: 120px !important;
   }
+}
+
+/* Small Mobile Devices (phones in portrait) */
+@media (max-width: 480px) {
+  .container {
+    padding: 5px;
+  }
+  
+  .btn {
+    min-width: 100px;
+    padding: 10px 15px;
+    font-size: 13px;
+    margin: 4px;
+  }
+  
+  .card {
+    padding: 15px;
+    border-radius: 12px;
+  }
+  
+  .card h2 {
+    font-size: 1.3rem;
+  }
+  
+  /* Text Chat Small Mobile */
+  .chat-container {
+    height: calc(100vh - 260px);
+  }
+  
+  .chat-messages {
+    padding: 10px;
+    margin-bottom: 12px;
+  }
+  
+  .message {
+    max-width: 90%;
+    padding: 10px 12px;
+    font-size: 14px;
+    margin-bottom: 10px;
+    border-radius: 12px;
+  }
+  
+  .chat-input {
+    gap: 6px;
+  }
+  
+  .chat-input input {
+    padding: 10px 12px;
+    font-size: 14px;
+    border-radius: 20px;
+  }
+  
+  .chat-input button {
+    padding: 10px 15px;
+    font-size: 13px;
+    border-radius: 20px;
+  }
+  
+  /* Hide button text on very small screens, show icon only */
+  .send-button .send-text {
+    display: none;
+  }
+  
+  .send-button {
+    min-width: 45px !important;
+    padding: 10px 12px !important;
+  }
+  
+  .send-button svg {
+    margin: 0 !important;
+  }
+  
+  .controls {
+    gap: 6px;
+  }
+  
+  .controls .btn {
+    padding: 10px 15px;
+    font-size: 13px;
+    margin: 3px 0;
+  }
+  
+  /* Empty chat message on mobile */
+  .empty-chat {
+    padding: 30px 15px !important;
+  }
+  
+  .empty-chat div {
+    font-size: 2rem !important;
+  }
+  
+  .empty-chat h3 {
+    font-size: 1.1rem !important;
+  }
+  
+  .empty-chat p {
+    font-size: 0.9rem !important;
+  }
+  
+  .status {
+    padding: 8px 15px;
+    font-size: 13px;
+  }
+  
+  /* Make waiting/no users messages more compact */
+  .text-center .card {
+    padding: 20px 15px;
+  }
+  
+  .text-center h2 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+  }
+  
+  .text-center p {
+    font-size: 14px;
+  }
+  
+  /* Improve scrollbar on mobile */
+  .chat-messages::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  .chat-messages::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+  }
+}
+
+/* Extra small devices (very small phones) */
+@media (max-width: 360px) {
+  .container {
+    padding: 3px;
+  }
+  
+  .card {
+    padding: 12px;
+  }
+  
+  .card h2 {
+    font-size: 1.1rem;
+  }
+  
+  .chat-container {
+    height: calc(100vh - 240px);
+  }
+  
+  .message {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+  
+  .chat-input input {
+    font-size: 13px;
+    padding: 9px 12px;
+  }
+  
+  .send-button {
+    min-width: 40px !important;
+    padding: 9px 10px !important;
+  }
+  
+  .controls .btn {
+    font-size: 12px;
+    padding: 9px 12px;
+  }
+  
+  .btn {
+    font-size: 12px;
+    padding: 9px 12px;
+  }
+}
+
+/* Landscape mode optimizations for mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .chat-container {
+    height: calc(100vh - 200px);
+  }
+  
+  .card {
+    padding: 15px;
+  }
+  
+  .chat-messages {
+    padding: 10px;
+  }
+  
+  .message {
+    margin-bottom: 8px;
+  }
+}
+
+/* Ensure minimum touch target size (44px x 44px for iOS) */
+.btn,
+.chat-input button,
+.send-button {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Prevent text selection on buttons for better mobile UX */
+.btn,
+.chat-input button {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Improve touch feedback */
+.btn:active,
+.chat-input button:active {
+  transform: scale(0.98);
+}
+
+/* Better scrolling on iOS */
+.chat-messages {
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Modal styles */

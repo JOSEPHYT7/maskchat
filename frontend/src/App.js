@@ -22,13 +22,8 @@ function App() {
   const [isHost, setIsHost] = useState(false);
 
   useEffect(() => {
-    // Auto-detect backend URL based on environment
-    // For production: Use your deployed Render backend URL
-    // For development: Use localhost
-    const backendUrl = process.env.REACT_APP_BACKEND_URL || 
-                       (window.location.hostname === 'localhost' 
-                         ? 'http://localhost:5001' 
-                         : 'https://maskchat-pbo3.onrender.com');
+    // FORCE localhost for testing - change this back for production!
+    const backendUrl = 'http://localhost:5001';
     
     console.log('🔌 Attempting to connect to:', backendUrl);
     
@@ -69,12 +64,13 @@ function App() {
 
     // Listen for partner found
     newSocket.on('partnerFound', (data) => {
+      console.log('📩 App.js received partnerFound:', JSON.stringify(data));
       setRoomId(data.roomId);
+      // Only change view for text chat (VideoChat component already shown)
       if (data.type === 'text') {
         setCurrentView('textChat');
-      } else {
-        setCurrentView('videoChat');
       }
+      // Don't change view for video - already showing VideoChat component
     });
 
     // Listen for partner disconnected
