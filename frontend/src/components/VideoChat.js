@@ -18,6 +18,7 @@ const VideoChat = ({ socket, roomId, onBackToHome }) => {
   const remoteVideoRef = useRef(null);
   const peerConnectionRef = useRef(null);
   const connectionTimeoutRef = useRef(null);
+  const localVideoSetupRef = useRef(false); // Track if local video is set up
 
   const iceServers = {
     iceServers: [
@@ -421,6 +422,9 @@ const VideoChat = ({ socket, roomId, onBackToHome }) => {
   useEffect(() => {
     const displayLocalVideo = () => {
       if (localStream && localVideoRef.current) {
+        // Reset setup flag to allow re-setup
+        localVideoSetupRef.current = false;
+        
         console.log('📹 Setting local video stream');
         console.log('📹 Stream ID:', localStream.id);
         console.log('📹 Active tracks:', localStream.getTracks().map(t => `${t.kind}: ${t.readyState} (enabled: ${t.enabled})`));
@@ -434,37 +438,51 @@ const VideoChat = ({ socket, roomId, onBackToHome }) => {
           // Force enable if disabled
           if (!videoTrack.enabled) {
             videoTrack.enabled = true;
-            console.log('✅ Enabled video track');
+            console.log('✅ Force enabled video track');
           }
         }
         
+        // Always set srcObject
         localVideoRef.current.srcObject = localStream;
+        localVideoSetupRef.current = true;
         
         // Add loadedmetadata event listener
-        localVideoRef.current.onloadedmetadata = () => {
+        const handleLoadedMetadata = () => {
           console.log('📺 Video metadata loaded');
-          localVideoRef.current.play()
-            .then(() => {
-              console.log('✅ Local video playing successfully');
-              console.log('📺 Video element dimensions:', localVideoRef.current.videoWidth, 'x', localVideoRef.current.videoHeight);
-            })
-            .catch(err => {
-              console.error('❌ Error playing local video:', err);
-            });
+          if (localVideoRef.current) {
+            localVideoRef.current.play()
+              .then(() => {
+                console.log('✅ Local video playing successfully');
+                console.log('📺 Video element dimensions:', localVideoRef.current.videoWidth, 'x', localVideoRef.current.videoHeight);
+              })
+              .catch(err => {
+                console.error('❌ Error playing local video:', err);
+              });
+          }
         };
+        
+        localVideoRef.current.onloadedmetadata = handleLoadedMetadata;
         
         // Also try playing immediately
         localVideoRef.current.play().catch(err => {
-          console.log('⚠️ Immediate play failed (waiting for metadata):', err.message);
+          console.log('⚠️ Immediate play failed (will wait for metadata):', err.message);
         });
       } else if (!localStream) {
         console.log('⚠️ No local stream available to display');
+        localVideoSetupRef.current = false;
       } else if (!localVideoRef.current) {
         console.log('⚠️ Video ref not available yet');
       }
     };
     
     displayLocalVideo();
+    
+    // Cleanup function
+    return () => {
+      if (localVideoRef.current) {
+        localVideoRef.current.onloadedmetadata = null;
+      }
+    };
   }, [localStream]);
 
   useEffect(() => {
