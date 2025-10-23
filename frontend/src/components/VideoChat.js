@@ -485,6 +485,31 @@ const VideoChat = ({ socket, roomId, onBackToHome }) => {
     };
   }, [localStream]);
 
+  // Separate effect to ensure local video displays even if ref loads late
+  useEffect(() => {
+    if (localVideoRef.current && localStream && !localVideoSetupRef.current) {
+      console.log('🔄 Video ref now available - setting up local video');
+      
+      const videoTrack = localStream.getVideoTracks()[0];
+      if (videoTrack && !videoTrack.enabled) {
+        videoTrack.enabled = true;
+      }
+      
+      localVideoRef.current.srcObject = localStream;
+      localVideoSetupRef.current = true;
+      
+      localVideoRef.current.onloadedmetadata = () => {
+        if (localVideoRef.current) {
+          localVideoRef.current.play()
+            .then(() => console.log('✅ Local video playing (late setup)'))
+            .catch(err => console.error('❌ Error playing local video (late setup):', err));
+        }
+      };
+      
+      localVideoRef.current.play().catch(() => {});
+    }
+  }, [localStream, localVideoRef.current]);
+
   useEffect(() => {
     if (remoteStream && remoteVideoRef.current) {
       console.log('📹 Setting remote video stream');
