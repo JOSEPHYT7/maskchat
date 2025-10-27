@@ -19,6 +19,22 @@ const Header = ({ onlineUsers, connectionStatus }) => {
   };
 
   const statusInfo = getConnectionStatusInfo();
+  
+  // Add tooltip with more detailed status
+  const getStatusTooltip = () => {
+    switch (connectionStatus) {
+      case 'connected':
+        return 'Server connection is active and ready';
+      case 'connecting':
+        return 'Attempting to connect to server... This may take a moment if the server is starting up';
+      case 'disconnected':
+        return 'Lost connection to server. Attempting to reconnect...';
+      case 'error':
+        return 'Connection failed. Check your internet connection and try refreshing the page';
+      default:
+        return 'Establishing connection to server...';
+    }
+  };
 
   return (
     <header style={{ 
@@ -83,18 +99,22 @@ const Header = ({ onlineUsers, connectionStatus }) => {
           {/* Connection Status & Online Users */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
             {/* Connection Status */}
-            <div style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '6px',
-              padding: '6px 12px',
-              backgroundColor: 'rgba(255, 255, 255, 0.1)',
-              borderRadius: '20px',
-              fontSize: '12px',
-              fontWeight: '500',
-              color: statusInfo.color,
-              border: `1px solid ${statusInfo.color}20`
-            }}>
+            <div 
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '6px',
+                padding: '6px 12px',
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                borderRadius: '20px',
+                fontSize: '12px',
+                fontWeight: '500',
+                color: statusInfo.color,
+                border: `1px solid ${statusInfo.color}20`,
+                cursor: 'help'
+              }}
+              title={getStatusTooltip()}
+            >
               <span>{statusInfo.icon}</span>
               <span>{statusInfo.text}</span>
             </div>

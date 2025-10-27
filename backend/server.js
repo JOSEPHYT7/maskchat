@@ -13,7 +13,6 @@ function generateRoomId() {
 }
 
 const app = express();
-const server = http.createServer(app);
 
 // Configure CORS for Express
 const allowedOrigins = [
@@ -37,13 +36,28 @@ app.use(cors({
   credentials: true
 }));
 
-// Configure Socket.IO with CORS
+// Optimize server startup for faster cold starts
+const server = http.createServer(app);
+
+// Enable keep-alive for faster connections
+server.keepAliveTimeout = 65000; // 65 seconds
+server.headersTimeout = 66000; // 66 seconds
+
+// Configure Socket.IO with optimized settings for faster connections
 const io = socketIo(server, {
   cors: {
     origin: allowedOrigins,
     methods: ['GET', 'POST'],
     credentials: true
-  }
+  },
+  // Optimize for faster connections
+  pingTimeout: 60000,
+  pingInterval: 25000,
+  upgradeTimeout: 10000,
+  allowEIO3: true,
+  transports: ['polling', 'websocket'],
+  allowUpgrades: true,
+  perMessageDeflate: false // Disable compression for faster initial connection
 });
 
 // Middleware

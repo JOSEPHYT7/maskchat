@@ -23,28 +23,58 @@ function App() {
   const [connectionStatus, setConnectionStatus] = useState('connecting'); // 'connecting', 'connected', 'disconnected', 'error'
 
   useEffect(() => {
-    // Auto-detect backend URL based on environment
-    // For production: Use your deployed Render backend URL
-    // For development: Use localhost
-    const backendUrl = process.env.REACT_APP_BACKEND_URL || 
-                       (window.location.hostname === 'localhost' 
-                         ? 'http://localhost:5001' 
-                         : 'https://maskchat-pbo3.onrender.com');
+    // Auto-detect backend URL with fallbacks
+    const getBackendUrl = () => {
+      if (process.env.REACT_APP_BACKEND_URL) {
+        return process.env.REACT_APP_BACKEND_URL;
+      }
+      
+      if (window.location.hostname === 'localhost') {
+        return 'http://localhost:5001';
+      }
+      
+      // Production fallbacks - try multiple URLs
+      return 'https://maskchat-pbo3.onrender.com';
+    };
+    
+    const backendUrl = getBackendUrl();
     
     console.log('🔌 Attempting to connect to:', backendUrl);
     
+    // Preload connection by pinging the server first
+    const preloadConnection = async () => {
+      try {
+        console.log('🚀 Preloading connection...');
+        const response = await fetch(`${backendUrl}/keep-alive`, {
+          method: 'GET',
+          mode: 'cors',
+          cache: 'no-cache'
+        });
+        if (response.ok) {
+          console.log('✅ Server is awake, proceeding with Socket.IO connection');
+        }
+      } catch (error) {
+        console.log('⚠️ Preload failed, proceeding with Socket.IO connection anyway');
+      }
+    };
+    
+    // Start preloading immediately
+    preloadConnection();
+    
     const newSocket = io(backendUrl, {
-      transports: ['websocket', 'polling'],
-      timeout: 20000, // Increased from 5000 to 20000ms (20 seconds)
+      transports: ['polling', 'websocket'], // Try polling first (faster for cold starts)
+      timeout: 10000, // Reduced to 10 seconds for faster failure detection
       forceNew: true,
       reconnection: true,
-      reconnectionDelay: 1000, // Start reconnecting after 1 second
-      reconnectionDelayMax: 5000, // Max delay between reconnection attempts
-      maxReconnectionAttempts: 5, // Try up to 5 times
-      reconnectionAttempts: 5,
-      randomizationFactor: 0.5, // Add randomness to prevent thundering herd
-      upgrade: true, // Allow transport upgrades
-      rememberUpgrade: true
+      reconnectionDelay: 500, // Faster initial reconnection
+      reconnectionDelayMax: 3000, // Shorter max delay
+      maxReconnectionAttempts: 10, // More attempts
+      reconnectionAttempts: 10,
+      randomizationFactor: 0.3, // Less randomization for faster retries
+      upgrade: true,
+      rememberUpgrade: false, // Don't remember upgrade to try both transports
+      autoConnect: true,
+      multiplex: false // Disable multiplexing for faster connection
     });
     setSocket(newSocket);
     
@@ -85,6 +115,14 @@ function App() {
       console.log('🔄 Reconnecting... attempt:', attemptNumber);
       setConnectionStatus('connecting');
     });
+
+    // Add connection timeout handler
+    const connectionTimeout = setTimeout(() => {
+      if (connectionStatus === 'connecting') {
+        console.log('⏰ Connection timeout - server may be cold starting');
+        setConnectionStatus('connecting'); // Keep showing connecting with timeout message
+      }
+    }, 15000); // 15 second timeout warning
 
     // Listen for user count updates
     newSocket.on('userCountUpdate', (count) => {
@@ -163,6 +201,7 @@ function App() {
     });
 
     return () => {
+      clearTimeout(connectionTimeout);
       newSocket.close();
     };
   }, []);

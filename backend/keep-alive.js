@@ -1,17 +1,17 @@
 #!/usr/bin/env node
 
 /**
- * Keep-alive script for Render.com
- * This script periodically pings the server to prevent cold starts
+ * Aggressive keep-alive script for Render.com
+ * This script frequently pings the server to prevent cold starts
  */
 
 const https = require('https');
 const http = require('http');
 
 const BACKEND_URL = process.env.BACKEND_URL || 'https://maskchat-pbo3.onrender.com';
-const INTERVAL = 5 * 60 * 1000; // 5 minutes
+const INTERVAL = 2 * 60 * 1000; // 2 minutes (more frequent)
 
-console.log('🔄 Starting keep-alive script for:', BACKEND_URL);
+console.log('🔄 Starting AGGRESSIVE keep-alive script for:', BACKEND_URL);
 console.log('⏰ Interval:', INTERVAL / 1000, 'seconds');
 
 function pingServer() {
@@ -23,7 +23,7 @@ function pingServer() {
     port: url.port || (url.protocol === 'https:' ? 443 : 80),
     path: '/keep-alive',
     method: 'GET',
-    timeout: 10000
+    timeout: 5000 // Faster timeout
   };
 
   const req = client.request(options, (res) => {
@@ -54,10 +54,8 @@ function pingServer() {
   req.end();
 }
 
-// Ping immediately
+// Ping immediately and then every interval
 pingServer();
-
-// Then ping every interval
 setInterval(pingServer, INTERVAL);
 
-console.log('🚀 Keep-alive script is running...');
+console.log('🚀 AGGRESSIVE keep-alive script is running...');
