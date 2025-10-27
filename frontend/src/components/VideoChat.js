@@ -20,6 +20,20 @@ const VideoChat = ({ socket, roomId, onBackToHome }) => {
   const peerConnectionRef = useRef(null);
   const connectionTimeoutRef = useRef(null);
   const localVideoSetupRef = useRef(false); // Track if local video is set up
+  
+  // Helper function to clear video elements and prevent stream mixing
+  const clearVideoElements = useCallback(() => {
+    console.log('🧹 Clearing all video elements to prevent stream mixing');
+    if (localVideoRef.current) {
+      localVideoRef.current.srcObject = null;
+      console.log('✅ Cleared local video element');
+    }
+    if (remoteVideoRef.current) {
+      remoteVideoRef.current.srcObject = null;
+      console.log('✅ Cleared remote video element');
+    }
+    localVideoSetupRef.current = false;
+  }, []);
 
   const iceServers = {
     iceServers: [
@@ -238,15 +252,8 @@ const VideoChat = ({ socket, roomId, onBackToHome }) => {
     console.log('🔄 User requested next partner');
     socket.emit('nextPartner');
     
-    // Clear remote video element
-    if (remoteVideoRef.current) {
-      remoteVideoRef.current.srcObject = null;
-      console.log('🧹 Cleared remote video element');
-    }
-    
-    // Reset local video setup flag so it can be re-displayed
-    localVideoSetupRef.current = false;
-    console.log('🔄 Reset local video setup flag');
+    // Clear all video elements to prevent stream mixing
+    clearVideoElements();
     
     // Trigger video re-display
     setVideoDisplayTrigger(prev => prev + 1);
@@ -269,7 +276,7 @@ const VideoChat = ({ socket, roomId, onBackToHome }) => {
       peerConnectionRef.current.close();
       peerConnectionRef.current = null;
     }
-  }, [socket]);
+  }, [socket, clearVideoElements]);
 
   const handleStopChat = useCallback(() => {
     console.log('🛑 Stopping chat and cleaning up...');
@@ -283,15 +290,8 @@ const VideoChat = ({ socket, roomId, onBackToHome }) => {
       clearTimeout(connectionTimeoutRef.current);
     }
     
-    // Clear video elements first
-    if (localVideoRef.current) {
-      localVideoRef.current.srcObject = null;
-      console.log('🧹 Cleared local video element');
-    }
-    if (remoteVideoRef.current) {
-      remoteVideoRef.current.srcObject = null;
-      console.log('🧹 Cleared remote video element');
-    }
+    // Clear all video elements to prevent stream mixing
+    clearVideoElements();
     
     // Stop local stream tracks
     if (localStream) {
@@ -316,7 +316,7 @@ const VideoChat = ({ socket, roomId, onBackToHome }) => {
     setIsInitiator(false);
     
     onBackToHome();
-  }, [socket, localStream, onBackToHome]);
+  }, [socket, localStream, onBackToHome, clearVideoElements]);
 
   // Initialize media once on mount
   useEffect(() => {
@@ -406,6 +406,9 @@ const VideoChat = ({ socket, roomId, onBackToHome }) => {
     socket.on('partnerDisconnected', () => {
       console.log('👋 Partner disconnected - rejoining queue');
       
+      // Clear all video elements to prevent stream mixing
+      clearVideoElements();
+      
       // Clean up peer connection
       if (peerConnectionRef.current) {
         peerConnectionRef.current.close();
@@ -417,6 +420,9 @@ const VideoChat = ({ socket, roomId, onBackToHome }) => {
       setRemoteStream(null);
       setIsInitiator(false);
       setConnectionStatus('Partner disconnected. Finding new partner...');
+      
+      // Trigger video re-display
+      setVideoDisplayTrigger(prev => prev + 1);
       
       // Automatically rejoin the queue
       setIsWaiting(true);
@@ -584,13 +590,8 @@ const VideoChat = ({ socket, roomId, onBackToHome }) => {
         clearTimeout(connectionTimeoutRef.current);
       }
       
-      // Clear video elements
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = null;
-      }
-      if (remoteVideoRef.current) {
-        remoteVideoRef.current.srcObject = null;
-      }
+      // Clear all video elements to prevent stream mixing
+      clearVideoElements();
       
       // Stop local stream
       if (localStream) {
@@ -606,7 +607,7 @@ const VideoChat = ({ socket, roomId, onBackToHome }) => {
         console.log('Closed peer connection on unmount');
       }
     };
-  }, [localStream]);
+  }, [localStream, clearVideoElements]);
 
   const toggleMute = () => {
     if (localStream) {
