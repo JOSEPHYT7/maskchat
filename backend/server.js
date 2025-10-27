@@ -311,22 +311,6 @@ io.on('connection', (socket) => {
   });
 });
 
-// Health check endpoint with detailed analytics
-app.get('/health', (req, res) => {
-  const status = userMatcher.getStatus();
-  res.json({ 
-    status: 'OK', 
-    onlineUsers,
-    ...status,
-    privateRooms: Array.from(rooms.entries()).map(([id, room]) => ({
-      id,
-      name: room.name,
-      userCount: room.users.length,
-      creator: room.creator
-    })),
-    timestamp: new Date().toISOString()
-  });
-});
 
 // Analytics endpoint
 app.get('/analytics', (req, res) => {
@@ -375,10 +359,42 @@ app.get('/algorithm-health', (req, res) => {
   res.json(health);
 });
 
+// Keep-alive endpoint to prevent cold starts on Render.com
+app.get('/keep-alive', (req, res) => {
+  res.json({ 
+    status: 'alive', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    message: 'Server is running and ready to handle connections'
+  });
+});
+
+// Enhanced health check with more details
+app.get('/health', (req, res) => {
+  const status = userMatcher.getStatus();
+  res.json({ 
+    status: 'OK', 
+    onlineUsers,
+    ...status,
+    privateRooms: Array.from(rooms.entries()).map(([id, room]) => ({
+      id,
+      name: room.name,
+      userCount: room.users.length,
+      creator: room.creator
+    })),
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    memory: process.memoryUsage(),
+    platform: process.platform,
+    nodeVersion: process.version
+  });
+});
+
 const PORT = process.env.PORT || 5001;
 server.listen(PORT, () => {
   console.log(`🚀 Advanced Ephemeral Chat Server running on port ${PORT}`);
   console.log(`📊 Health check: http://localhost:${PORT}/health`);
+  console.log(`💓 Keep-alive: http://localhost:${PORT}/keep-alive`);
   console.log(`📈 Analytics: http://localhost:${PORT}/analytics`);
   console.log(`⚡ Performance: http://localhost:${PORT}/performance`);
   console.log(`🧪 Algorithm Test: http://localhost:${PORT}/test-algorithm`);
@@ -391,4 +407,5 @@ server.listen(PORT, () => {
   console.log(`   ✅ Real-time performance monitoring`);
   console.log(`   ✅ Comprehensive testing & validation`);
   console.log(`   ✅ Intelligent recommendations`);
+  console.log(`   ✅ Keep-alive endpoint to prevent cold starts`);
 });

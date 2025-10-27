@@ -1,7 +1,24 @@
 import React, { useState } from 'react';
 
-const Header = ({ onlineUsers }) => {
+const Header = ({ onlineUsers, connectionStatus }) => {
   const [showMenu, setShowMenu] = useState(false);
+
+  const getConnectionStatusInfo = () => {
+    switch (connectionStatus) {
+      case 'connected':
+        return { color: '#00ff88', text: 'Connected', icon: '🟢' };
+      case 'connecting':
+        return { color: '#ffa500', text: 'Connecting...', icon: '🟡' };
+      case 'disconnected':
+        return { color: '#ff6b6b', text: 'Disconnected', icon: '🔴' };
+      case 'error':
+        return { color: '#ff6b6b', text: 'Connection Error', icon: '❌' };
+      default:
+        return { color: '#ffa500', text: 'Connecting...', icon: '🟡' };
+    }
+  };
+
+  const statusInfo = getConnectionStatusInfo();
 
   return (
     <header style={{ 
@@ -63,8 +80,26 @@ const Header = ({ onlineUsers }) => {
             </div>
           </div>
 
-          {/* Online Users & Actions */}
+          {/* Connection Status & Online Users */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+            {/* Connection Status */}
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '6px',
+              padding: '6px 12px',
+              backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              borderRadius: '20px',
+              fontSize: '12px',
+              fontWeight: '500',
+              color: statusInfo.color,
+              border: `1px solid ${statusInfo.color}20`
+            }}>
+              <span>{statusInfo.icon}</span>
+              <span>{statusInfo.text}</span>
+            </div>
+
+            {/* Online Users */}
             <div style={{ 
               display: 'flex', 
               alignItems: 'center', 
@@ -79,9 +114,9 @@ const Header = ({ onlineUsers }) => {
                 width: '8px',
                 height: '8px',
                 borderRadius: '50%',
-                backgroundColor: '#00ff88',
-                boxShadow: '0 0 8px rgba(0, 255, 136, 0.6)',
-                animation: 'pulse 2s infinite'
+                backgroundColor: connectionStatus === 'connected' ? '#00ff88' : '#ffa500',
+                boxShadow: connectionStatus === 'connected' ? '0 0 8px rgba(0, 255, 136, 0.6)' : '0 0 8px rgba(255, 165, 0, 0.6)',
+                animation: connectionStatus === 'connected' ? 'pulse 2s infinite' : 'none'
               }}></div>
               <span style={{ fontWeight: '600' }}>{onlineUsers} online</span>
             </div>

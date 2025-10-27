@@ -20,6 +20,7 @@ function App() {
   const [showPerformanceMonitor, setShowPerformanceMonitor] = useState(false);
   const [roomName, setRoomName] = useState('');
   const [isHost, setIsHost] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState('connecting'); // 'connecting', 'connected', 'disconnected', 'error'
 
   useEffect(() => {
     // Auto-detect backend URL based on environment
@@ -34,8 +35,16 @@ function App() {
     
     const newSocket = io(backendUrl, {
       transports: ['websocket', 'polling'],
-      timeout: 5000,
-      forceNew: true
+      timeout: 20000, // Increased from 5000 to 20000ms (20 seconds)
+      forceNew: true,
+      reconnection: true,
+      reconnectionDelay: 1000, // Start reconnecting after 1 second
+      reconnectionDelayMax: 5000, // Max delay between reconnection attempts
+      maxReconnectionAttempts: 5, // Try up to 5 times
+      reconnectionAttempts: 5,
+      randomizationFactor: 0.5, // Add randomness to prevent thundering herd
+      upgrade: true, // Allow transport upgrades
+      rememberUpgrade: true
     });
     setSocket(newSocket);
     
@@ -43,23 +52,38 @@ function App() {
     newSocket.on('connect', () => {
       console.log('✅ Connected to backend:', newSocket.id);
       console.log('✅ Socket transport:', newSocket.io.engine.transport.name);
+      setConnectionStatus('connected');
     });
 
     newSocket.on('disconnect', (reason) => {
       console.log('❌ Disconnected from backend:', reason);
+      setConnectionStatus('disconnected');
     });
 
     newSocket.on('connect_error', (error) => {
       console.error('❌ Connection error:', error);
       console.error('❌ Error details:', error.message);
+      setConnectionStatus('error');
     });
 
     newSocket.on('reconnect', (attemptNumber) => {
       console.log('🔄 Reconnected after', attemptNumber, 'attempts');
+      setConnectionStatus('connected');
     });
 
     newSocket.on('reconnect_error', (error) => {
       console.error('❌ Reconnection error:', error);
+      setConnectionStatus('error');
+    });
+
+    newSocket.on('reconnect_attempt', (attemptNumber) => {
+      console.log('🔄 Reconnection attempt:', attemptNumber);
+      setConnectionStatus('connecting');
+    });
+
+    newSocket.on('reconnecting', (attemptNumber) => {
+      console.log('🔄 Reconnecting... attempt:', attemptNumber);
+      setConnectionStatus('connecting');
     });
 
     // Listen for user count updates
@@ -227,7 +251,8 @@ function App() {
     <div className="App">
       {currentView !== 'privateRoom' && (
         <Header 
-          onlineUsers={onlineUsers} 
+          onlineUsers={onlineUsers}
+          connectionStatus={connectionStatus}
         />
       )}
       <div className="container">
