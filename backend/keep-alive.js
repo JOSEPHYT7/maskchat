@@ -9,21 +9,21 @@ const https = require('https');
 const http = require('http');
 
 const BACKEND_URL = process.env.BACKEND_URL || 'https://maskchat-pbo3.onrender.com';
-const INTERVAL = 2 * 60 * 1000; // 2 minutes (more frequent)
+const INTERVAL = 30 * 1000; // 30 seconds (very aggressive for free tier)
 
-console.log('🔄 Starting AGGRESSIVE keep-alive script for:', BACKEND_URL);
-console.log('⏰ Interval:', INTERVAL / 1000, 'seconds');
+console.log('🔄 Starting ULTRA-AGGRESSIVE keep-alive script for FREE TIER:', BACKEND_URL);
+console.log('⏰ Interval:', INTERVAL / 1000, 'seconds (prevents free tier sleep)');
 
-function pingServer() {
+function pingServer(endpoint = '/keep-alive') {
   const url = new URL(BACKEND_URL);
   const client = url.protocol === 'https:' ? https : http;
   
   const options = {
     hostname: url.hostname,
     port: url.port || (url.protocol === 'https:' ? 443 : 80),
-    path: '/keep-alive',
+    path: endpoint,
     method: 'GET',
-    timeout: 5000 // Faster timeout
+    timeout: 10000 // Increased timeout for cold starts
   };
 
   const req = client.request(options, (res) => {
@@ -35,19 +35,25 @@ function pingServer() {
     res.on('end', () => {
       try {
         const response = JSON.parse(data);
-        console.log(`✅ Keep-alive successful: ${response.status} - ${response.message}`);
+        const coldStart = response.coldStart ? ' (COLD START)' : '';
+        console.log(`✅ ${endpoint} successful: ${response.status} - ${response.message}${coldStart}`);
+        if (response.coldStart) {
+          console.log('🔥 Server was cold, warming up...');
+          // Try to warm up the server (may not exist on older deployments)
+          setTimeout(() => pingServer('/warmup'), 2000);
+        }
       } catch (error) {
-        console.log('✅ Keep-alive successful (non-JSON response)');
+        console.log(`✅ ${endpoint} successful (non-JSON response)`);
       }
     });
   });
 
   req.on('error', (error) => {
-    console.error('❌ Keep-alive failed:', error.message);
+    console.error(`❌ ${endpoint} failed:`, error.message);
   });
 
   req.on('timeout', () => {
-    console.error('❌ Keep-alive timeout');
+    console.error(`❌ ${endpoint} timeout`);
     req.destroy();
   });
 

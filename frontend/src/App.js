@@ -48,10 +48,33 @@ function App() {
         const response = await fetch(`${backendUrl}/keep-alive`, {
           method: 'GET',
           mode: 'cors',
-          cache: 'no-cache'
+          cache: 'no-cache',
+          timeout: 15000 // 15 second timeout for cold starts
         });
         if (response.ok) {
+          const data = await response.json();
           console.log('✅ Server is awake, proceeding with Socket.IO connection');
+          if (data.coldStart === true) {
+            console.log('🔥 Server was cold, warming up...');
+            // Give server time to warm up
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            // Try warmup endpoint (optional - may not exist on older deployments)
+            try {
+              const warmupResponse = await fetch(`${backendUrl}/warmup`, {
+                method: 'GET',
+                mode: 'cors',
+                cache: 'no-cache',
+                timeout: 10000
+              });
+              if (warmupResponse.ok) {
+                console.log('🔥 Server warmed up successfully');
+              } else {
+                console.log('⚠️ Warmup endpoint not available (404), proceeding anyway');
+              }
+            } catch (warmupError) {
+              console.log('⚠️ Warmup failed, proceeding anyway');
+            }
+          }
         }
       } catch (error) {
         console.log('⚠️ Preload failed, proceeding with Socket.IO connection anyway');
@@ -63,18 +86,22 @@ function App() {
     
     const newSocket = io(backendUrl, {
       transports: ['polling', 'websocket'], // Try polling first (faster for cold starts)
-      timeout: 10000, // Reduced to 10 seconds for faster failure detection
+      timeout: 60000, // 60 seconds - handle free tier cold starts (50+ seconds)
       forceNew: true,
       reconnection: true,
-      reconnectionDelay: 500, // Faster initial reconnection
-      reconnectionDelayMax: 3000, // Shorter max delay
-      maxReconnectionAttempts: 10, // More attempts
-      reconnectionAttempts: 10,
-      randomizationFactor: 0.3, // Less randomization for faster retries
+      reconnectionDelay: 1000, // Start with 1 second delay
+      reconnectionDelayMax: 8000, // Max 8 seconds between attempts
+      maxReconnectionAttempts: 12, // Reasonable number of attempts
+      reconnectionAttempts: 12,
+      randomizationFactor: 0.2, // Less randomization for more predictable retries
       upgrade: true,
       rememberUpgrade: false, // Don't remember upgrade to try both transports
       autoConnect: true,
-      multiplex: false // Disable multiplexing for faster connection
+      multiplex: false, // Disable multiplexing for faster connection
+      // Balanced timeouts for better user experience
+      pingTimeout: 60000, // 1 minute
+      pingInterval: 25000, // 25 seconds
+      upgradeTimeout: 15000 // 15 seconds for upgrades
     });
     setSocket(newSocket);
     
@@ -116,13 +143,29 @@ function App() {
       setConnectionStatus('connecting');
     });
 
-    // Add connection timeout handler
+    // Add connection timeout handler with better cold start detection
     const connectionTimeout = setTimeout(() => {
       if (connectionStatus === 'connecting') {
-        console.log('⏰ Connection timeout - server may be cold starting');
+        console.log('⏰ Connection timeout - server may be cold starting (free tier limitation)');
         setConnectionStatus('connecting'); // Keep showing connecting with timeout message
+        
+        // Try to warm up the server if it's taking too long (optional)
+        fetch(`${backendUrl}/warmup`, {
+          method: 'GET',
+          mode: 'cors',
+          cache: 'no-cache',
+          timeout: 10000
+        }).then((response) => {
+          if (response.ok) {
+            console.log('🔥 Server warmed up during timeout');
+          } else {
+            console.log('⚠️ Warmup endpoint not available (404), proceeding anyway');
+          }
+        }).catch((error) => {
+          console.log('⚠️ Warmup failed during timeout:', error.message);
+        });
       }
-    }, 15000); // 15 second timeout warning
+    }, 30000); // 30 second timeout warning for free tier cold starts
 
     // Listen for user count updates
     newSocket.on('userCountUpdate', (count) => {

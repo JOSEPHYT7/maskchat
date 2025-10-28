@@ -43,21 +43,29 @@ const server = http.createServer(app);
 server.keepAliveTimeout = 65000; // 65 seconds
 server.headersTimeout = 66000; // 66 seconds
 
-// Configure Socket.IO with optimized settings for faster connections
+// Configure Socket.IO with optimized settings for faster connections and cold starts
 const io = socketIo(server, {
   cors: {
     origin: allowedOrigins,
     methods: ['GET', 'POST'],
     credentials: true
   },
-  // Optimize for faster connections
-  pingTimeout: 60000,
-  pingInterval: 25000,
-  upgradeTimeout: 10000,
+  // Optimize for faster connections and cold starts
+  pingTimeout: 120000, // Increased to 2 minutes for cold starts
+  pingInterval: 30000, // Increased to 30 seconds
+  upgradeTimeout: 20000, // Increased to 20 seconds for cold starts
   allowEIO3: true,
   transports: ['polling', 'websocket'],
   allowUpgrades: true,
-  perMessageDeflate: false // Disable compression for faster initial connection
+  perMessageDeflate: false, // Disable compression for faster initial connection
+  // Additional cold start optimizations
+  connectTimeout: 30000, // 30 seconds for initial connection
+  forceNew: false, // Allow connection reuse
+  autoConnect: true,
+  reconnection: true,
+  reconnectionDelay: 1000,
+  reconnectionDelayMax: 5000,
+  maxReconnectionAttempts: 5
 });
 
 // Middleware
@@ -379,8 +387,30 @@ app.get('/keep-alive', (req, res) => {
     status: 'alive', 
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    message: 'Server is running and ready to handle connections'
+    onlineUsers,
+    activeRooms: userMatcher.activeRooms.size,
+    privateRooms: rooms.size,
+    message: 'Server is running and ready to handle connections',
+    coldStart: process.uptime() < 30 // Indicate if server just started
   });
+});
+
+// Additional warm-up endpoint for faster cold starts
+app.get('/warmup', (req, res) => {
+  // Pre-initialize some resources
+  const warmupData = {
+    status: 'warmed',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    onlineUsers,
+    activeRooms: userMatcher.activeRooms.size,
+    privateRooms: rooms.size,
+    memory: process.memoryUsage(),
+    message: 'Server warmed up and ready'
+  };
+  
+  res.json(warmupData);
+  console.log('🔥 Server warmed up:', warmupData);
 });
 
 // Enhanced health check with more details
