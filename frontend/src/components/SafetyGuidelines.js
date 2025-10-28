@@ -46,7 +46,7 @@ const SafetyGuidelines = ({ onBack }) => {
               🛡️ General Safety Tips
             </h2>
             <p style={{ color: '#ccc', marginBottom: '1rem' }}>
-              Your safety is our priority. Follow these guidelines to have a positive experience on Mask Chat.
+              Your safety is our priority. Follow these guidelines to have a positive experience on MeetWorld.
             </p>
             <ul style={{ color: '#ccc', paddingLeft: '1.5rem' }}>
               <li>Never share personal information (name, address, phone number, etc.)</li>

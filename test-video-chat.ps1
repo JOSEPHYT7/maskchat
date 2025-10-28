@@ -1,5 +1,5 @@
 # PowerShell script to test video chat
-Write-Host "🎥 MaskChat Video Chat Testing Script" -ForegroundColor Cyan
+Write-Host "🎥 MeetWorld Video Chat Testing Script" -ForegroundColor Cyan
 Write-Host "=====================================" -ForegroundColor Cyan
 Write-Host ""
 

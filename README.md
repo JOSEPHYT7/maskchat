@@ -1,4 +1,4 @@
-# MaskChat
+# MeetWorld
 
 A real-time anonymous chat platform that allows users to connect randomly for text chat or video chat, with live online user count, intelligent matching, private rooms, and no chat history or user data storage.
 
@@ -36,7 +36,7 @@ A real-time anonymous chat platform that allows users to connect randomly for te
 ## Project Structure
 
 ```
-MaskChat/
+MeetWorld/
 ├── backend/
 │   ├── server.js              # Express + Socket.IO server
 │   ├── matchingAlgorithm.js    # Advanced user matching system

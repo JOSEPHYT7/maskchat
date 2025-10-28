@@ -36,7 +36,7 @@ const TermsOfService = ({ onBack }) => {
             Terms of Service
           </h1>
           <p style={{ color: '#aaa', fontSize: '1.1rem' }}>
-            Please read these terms carefully before using Mask Chat
+            Please read these terms carefully before using MeetWorld
           </p>
         </div>
 
@@ -46,7 +46,7 @@ const TermsOfService = ({ onBack }) => {
               📋 Acceptance of Terms
             </h2>
             <p style={{ color: '#ccc', marginBottom: '1rem' }}>
-              By accessing and using Mask Chat, you accept and agree to be bound by the terms and provision of this agreement.
+              By accessing and using MeetWorld, you accept and agree to be bound by the terms and provision of this agreement.
             </p>
             <p style={{ color: '#ccc', marginBottom: '1rem' }}>
               If you do not agree to abide by the above, please do not use this service.
@@ -58,7 +58,7 @@ const TermsOfService = ({ onBack }) => {
               🎭 Service Description
             </h2>
             <p style={{ color: '#ccc', marginBottom: '1rem' }}>
-              Mask Chat is an anonymous, ephemeral chat platform that connects users for real-time conversations.
+              MeetWorld is an anonymous, ephemeral chat platform that connects users for real-time conversations.
             </p>
             <ul style={{ color: '#ccc', paddingLeft: '1.5rem' }}>
               <li>Anonymous text and video chat</li>
@@ -88,7 +88,7 @@ const TermsOfService = ({ onBack }) => {
               🚫 Prohibited Activities
             </h2>
             <p style={{ color: '#ccc', marginBottom: '1rem' }}>
-              The following activities are strictly prohibited on Mask Chat:
+              The following activities are strictly prohibited on MeetWorld:
             </p>
             <ul style={{ color: '#ccc', paddingLeft: '1.5rem' }}>
               <li>Harassment, bullying, or threatening behavior</li>
@@ -120,7 +120,7 @@ const TermsOfService = ({ onBack }) => {
               🛡️ Limitation of Liability
             </h2>
             <p style={{ color: '#ccc', marginBottom: '1rem' }}>
-              Mask Chat is provided "as is" without warranties of any kind.
+              MeetWorld is provided "as is" without warranties of any kind.
             </p>
             <ul style={{ color: '#ccc', paddingLeft: '1.5rem' }}>
               <li>We are not responsible for user interactions or content</li>
@@ -175,7 +175,7 @@ const TermsOfService = ({ onBack }) => {
           }}>
             <p style={{ color: '#aaa', fontSize: '0.9rem', margin: 0 }}>
               <strong>Last Updated:</strong> {new Date().toLocaleDateString()}<br/>
-              These terms are effective immediately and apply to all users of Mask Chat.
+              These terms are effective immediately and apply to all users of MeetWorld.
             </p>
           </div>
         </div>

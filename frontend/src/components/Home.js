@@ -121,6 +121,7 @@ const Home = ({ onStartTextChat, onStartVideoChat, socket, onCreateRoom, onJoinR
             <li>✅ Password-protected rooms</li>
           </ul>
         </div>
+
       </div>
     </div>
   );

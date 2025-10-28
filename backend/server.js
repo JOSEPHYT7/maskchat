@@ -17,8 +17,8 @@ const app = express();
 // Configure CORS for Express
 const allowedOrigins = [
   'http://localhost:3000',
-  'https://mask-chat-three.vercel.app',
-  'https://mask-chat-three.vercel.app/'
+  'https://meet-world.vercel.app',
+  'https://meet-world.vercel.app/'
 ];
 
 app.use(cors({

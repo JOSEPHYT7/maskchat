@@ -46,7 +46,7 @@ const PrivacyPolicy = ({ onBack }) => {
               🔒 Complete Anonymity
             </h2>
             <p style={{ color: '#ccc', marginBottom: '1rem' }}>
-              Mask Chat is designed with complete anonymity in mind. We do not collect, store, or process any personal information about our users.
+              MeetWorld is designed with complete anonymity in mind. We do not collect, store, or process any personal information about our users.
             </p>
             <ul style={{ color: '#ccc', paddingLeft: '1.5rem' }}>
               <li>No registration required</li>
@@ -161,7 +161,7 @@ const PrivacyPolicy = ({ onBack }) => {
           }}>
             <p style={{ color: '#aaa', fontSize: '0.9rem', margin: 0 }}>
               <strong>Last Updated:</strong> {new Date().toLocaleDateString()}<br/>
-              This policy is effective immediately and applies to all users of Mask Chat.
+              This policy is effective immediately and applies to all users of MeetWorld.
             </p>
           </div>
         </div>

@@ -49,7 +49,7 @@ npm start
 ```
 Compiled successfully!
 
-You can now view mask-chat in the browser.
+You can now view meet-world in the browser.
 
   Local:            http://localhost:3000
   On Your Network:  http://192.168.x.x:3000

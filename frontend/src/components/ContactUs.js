@@ -285,7 +285,7 @@ const ContactUs = ({ onBack }) => {
                   Do you have a mobile app?
                 </h3>
                 <p style={{ color: '#ccc', margin: 0 }}>
-                  Mask Chat is currently web-based and works great on mobile browsers. We're working on native mobile apps for iOS and Android.
+                  MeetWorld is currently web-based and works great on mobile browsers. We're working on native mobile apps for iOS and Android.
                 </p>
               </div>
 

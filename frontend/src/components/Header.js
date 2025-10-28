@@ -66,7 +66,7 @@ const Header = ({ onlineUsers, connectionStatus }) => {
             }}>
               <img 
                 src="/logo.png" 
-                alt="MaskChat Logo" 
+                alt="MeetWorld Logo" 
                 style={{ 
                   width: '100%', 
                   height: '100%', 
@@ -84,14 +84,14 @@ const Header = ({ onlineUsers, connectionStatus }) => {
                 backgroundClip: 'text',
                 fontWeight: '700'
               }}>
-                Mask Chat
+                MeetWorld
               </h1>
               <p style={{ 
                 fontSize: '0.75rem', 
                 color: '#aaa',
                 margin: 0
               }}>
-                Anonymous • Real-time • No History
+                Where Strangers Become Friends
               </p>
             </div>
           </div>

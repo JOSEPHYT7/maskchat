@@ -28,21 +28,21 @@ const Footer = ({ onNavigate }) => {
             }}>
               <img 
                 src="/logo.png" 
-                alt="MaskChat Logo" 
+                alt="MeetWorld Logo" 
                 style={{ 
                   width: '20px', 
                   height: '20px', 
                   objectFit: 'contain' 
                 }} 
               />
-              Mask Chat
+              MeetWorld
             </h3>
             <p style={{ 
               color: '#aaa', 
               lineHeight: '1.6',
               fontSize: '0.9rem'
             }}>
-              Connect with strangers anonymously. No registration, no history, 
+              Welcome to MeetWorld! Connect with strangers anonymously. No registration, no history, 
               just real-time conversations that disappear forever.
             </p>
           </div>
@@ -189,64 +189,122 @@ const Footer = ({ onNavigate }) => {
           </div>
 
           {/* Support Me */}
-          <div>
-            <h3 style={{ 
-              color: '#6c5ce7', 
-              marginBottom: '15px',
-              fontSize: '1.2rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.05)',
+            padding: '15px',
+            borderRadius: '12px',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '15px',
+            flexWrap: 'wrap'
+          }}>
+            {/* Left Content */}
+            <div style={{ flex: '1', minWidth: '200px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
+                {/* Text Content */}
+                <div style={{ flex: '1', minWidth: '150px' }}>
+                  <h3 style={{ 
+                    color: '#6c5ce7', 
+                    marginBottom: '5px',
+                    fontSize: '1rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    fontWeight: '600'
+                  }}>
+                    ☕ Support My Work
+                  </h3>
+                  
+                  <p style={{ 
+                    color: '#ccc', 
+                    fontSize: '0.85rem',
+                    marginBottom: '5px',
+                    lineHeight: '1.3'
+                  }}>
+                    Like what I'm building? Help keep this project running!
+                  </p>
+                  
+                  <p style={{ 
+                    color: '#ff6b6b', 
+                    fontSize: '0.75rem',
+                    marginBottom: '10px',
+                    fontWeight: '500'
+                  }}>
+                    ⚠️ Current: 2,000 users. Need funding for 100,000+ users!
+                  </p>
+                </div>
+
+                {/* Buy Me a Coffee Button */}
+                <div style={{ flexShrink: 0 }}>
+                  <a 
+                    href="https://www.buymeacoffee.com/jamesbond7" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      background: 'linear-gradient(45deg, #FFD700, #FFA500)',
+                      color: '#000',
+                      textDecoration: 'none',
+                      padding: '8px 16px',
+                      borderRadius: '20px',
+                      fontSize: '0.8rem',
+                      fontWeight: '600',
+                      transition: 'all 0.3s ease',
+                      boxShadow: '0 3px 12px rgba(255, 215, 0, 0.3)',
+                      border: 'none',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap'
+                    }}
+                    onMouseOver={(e) => {
+                      e.target.style.transform = 'translateY(-2px)';
+                      e.target.style.boxShadow = '0 5px 15px rgba(255, 215, 0, 0.4)';
+                    }}
+                    onMouseOut={(e) => {
+                      e.target.style.transform = 'translateY(0)';
+                      e.target.style.boxShadow = '0 3px 12px rgba(255, 215, 0, 0.3)';
+                    }}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M20 3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h3l-1 1v1h12v-1l-1-1h3c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 13H4V5h16v11z"/>
+                      <path d="M6 8h2v2H6zm4 0h2v2h-2zm4 0h2v2h-2z"/>
+                    </svg>
+                    Buy Me a Coffee
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* QR Code - Right Side */}
+            <div style={{
+              textAlign: 'center',
+              background: 'rgba(255, 255, 255, 0.05)',
+              padding: '10px',
+              borderRadius: '10px',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              flexShrink: 0
             }}>
-              ☕ Support My Work
-            </h3>
-            <p style={{ 
-              color: '#aaa', 
-              lineHeight: '1.6',
-              fontSize: '0.9rem',
-              marginBottom: '15px'
-            }}>
-              Like what I'm building? Help keep this project running by buying me a coffee!
-            </p>
-            <a 
-              href="https://www.buymeacoffee.com/jamesbond7" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="support-button"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                background: 'linear-gradient(45deg, #FFD700, #FFA500)',
-                color: '#000',
-                textDecoration: 'none',
-                padding: '12px 20px',
-                borderRadius: '25px',
-                fontSize: '0.9rem',
-                fontWeight: '600',
-                transition: 'all 0.3s ease',
-                boxShadow: '0 4px 15px rgba(255, 215, 0, 0.3)',
-                border: 'none',
-                cursor: 'pointer',
-                minWidth: '140px',
-                justifyContent: 'center',
-                textAlign: 'center'
-              }}
-              onMouseOver={(e) => {
-                e.target.style.transform = 'translateY(-2px)';
-                e.target.style.boxShadow = '0 6px 20px rgba(255, 215, 0, 0.4)';
-              }}
-              onMouseOut={(e) => {
-                e.target.style.transform = 'translateY(0)';
-                e.target.style.boxShadow = '0 4px 15px rgba(255, 215, 0, 0.3)';
-              }}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M20 3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h3l-1 1v1h12v-1l-1-1h3c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 13H4V5h16v11z"/>
-                <path d="M6 8h2v2H6zm4 0h2v2h-2zm4 0h2v2h-2z"/>
-              </svg>
-              Buy Me a Coffee
-            </a>
+              <div style={{ 
+                color: '#6c5ce7', 
+                fontSize: '0.75rem',
+                marginBottom: '6px',
+                fontWeight: '600'
+              }}>
+                Scan QR Code
+              </div>
+              <img 
+                src="/qr-code.png" 
+                alt="QR Code for Support" 
+                style={{
+                  width: '60px',
+                  height: '60px',
+                  borderRadius: '6px',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
+                }}
+              />
+            </div>
           </div>
         </div>
 
@@ -261,7 +319,7 @@ const Footer = ({ onNavigate }) => {
           gap: '15px'
         }}>
           <div style={{ color: '#666', fontSize: '0.8rem' }}>
-            © {new Date().getFullYear()} Mask Chat. All rights reserved.
+            © {new Date().getFullYear()} MeetWorld. All rights reserved.
           </div>
           <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
             <div style={{ color: '#666', fontSize: '0.8rem' }}>

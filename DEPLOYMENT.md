@@ -1,4 +1,4 @@
-# MaskChat Deployment Guide
+# MeetWorld Deployment Guide
 
 ## Backend Deployment (Render) ✅
 
@@ -20,7 +20,7 @@ Your backend is deployed on Render!
    - Go to https://vercel.com
    - Sign in with GitHub
    - Click "Add New Project"
-   - Import `JOSEPHYT7/MaskChat` repository
+   - Import `JOSEPHYT7/MeetWorld` repository
    - Configure:
      - Framework Preset: Create React App
      - Root Directory: `frontend`
@@ -34,7 +34,7 @@ Your backend is deployed on Render!
 
 3. **Your frontend will be live at:**
    ```
-   https://maskchat.vercel.app
+   https://meet-world.vercel.app
    ```
 
 ## Environment Variables
